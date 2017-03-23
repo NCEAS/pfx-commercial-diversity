@@ -1,0 +1,8 @@
+
+*.history
+
+analysis/.DS_Store
+
+*.pdf
+
+*.docx
