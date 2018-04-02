@@ -56,7 +56,7 @@ if(y == 1985) {
 library(viridis)
 fig = ggplot(filter(df, last_year !=2014),
   aes(year, last_year, group=year)) + geom_violin(fill="dodgerblue4") +
-  theme_sleek() + xlab("Year of herring permit ownership") +
+  theme_sleek() + xlab("Year active in Prince William Sound herring") +
   ylab("Last active year (any fishery)")
 
 pdf("Fig_A1.pdf")
