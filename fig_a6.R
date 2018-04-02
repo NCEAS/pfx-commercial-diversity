@@ -37,23 +37,19 @@ simp.div = function(x) {
 library(ggsidekick)
 
 sub_1 = group_by(cfec, p_holder) %>%
-  mutate(pws = ifelse(length(which(p_fshy%in%c("G 01E","G 34E", "H 01E", "H 34E", "L 21E")))>0, 1, 0)) %>%
+  mutate(pws = ifelse(length(which(p_fshy%in%c("S 01E", "S 03E")))>0, 1, 0)) %>%
   filter(pws>0) %>%
-  mutate(case_study = "PWS herring")
+  mutate(case_study = "Prince William Sound salmon")
 sub_2 = group_by(cfec, p_holder) %>%
-  mutate(pws = ifelse(length(which(p_fshy%in%c("B 06B","B 61B")))>0, 1, 0)) %>%
+  mutate(pws = ifelse(length(which(region%in%c("Cook Inlet")))>0, 1, 0)) %>%
   filter(pws>0) %>%
-  mutate(case_study = "Halibut")
+  mutate(case_study = "Cook Inlet")
 sub_3 = group_by(cfec, p_holder) %>%
-  mutate(pws = ifelse(length(which(p_fshy%in%c("S 03T")))>0, 1, 0)) %>%
+  mutate(pws = ifelse(length(which(region%in%c("PWS")))>0, 1, 0)) %>%
   filter(pws>0) %>%
-  mutate(case_study = "Bristol Bay Drift Gillnet")
-sub_4 = group_by(cfec, p_holder) %>%
-  mutate(pws = ifelse(length(which(region%in%c("Kodiak")))>0, 1, 0)) %>%
-  filter(pws>0) %>%
-  mutate(case_study = "Kodiak")
+  mutate(case_study = "Prince Willam Sound")
 
-coarse_df = rbind(sub_1, sub_2, sub_3, sub_4)
+coarse_df = rbind(sub_1, sub_2, sub_3)
 coarse_df = coarse_df %>%
   mutate(s = substr(p_fshy, 1, 1))
 coarse_df$p_fshy[which(coarse_df$s =="S")] = "S"
@@ -110,13 +106,14 @@ totals = group_by(totals, year, group, case_study) %>%
   summarize(n = sum(n)) %>%
   group_by(year, case_study) %>%
   mutate(n_year = sum(n))
+
 library(viridis)
 fig = ggplot(rename(totals, Fisheries=group), aes(year, n/n_year)) +
     geom_area(aes(fill = Fisheries), position = "stack", colour = 1) +
     xlab("Year") +
-    ylab("Proportion") + scale_fill_viridis(discrete=TRUE, end=0.9)
-    theme_sleek() + facet_wrap(~case_study) +
-      scale_fill_viridis(discrete=TRUE, end=0.9)
-pdf("Figure 4.pdf")
+    ylab("Proportion") +
+    theme_sleek() + facet_wrap(~case_study, nrow=2,ncol=2) +
+  scale_fill_viridis(discrete=TRUE, end=0.9)
+pdf("Figure A6.pdf")
 fig
 dev.off()
