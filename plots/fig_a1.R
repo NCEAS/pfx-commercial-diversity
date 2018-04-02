@@ -59,6 +59,6 @@ fig = ggplot(filter(df, last_year !=2014),
   theme_sleek() + xlab("Year of herring permit ownership") +
   ylab("Last active year (any fishery)")
 
-pdf("Figure_1a.pdf")
+pdf("Fig_A1.pdf")
 fig
 dev.off()

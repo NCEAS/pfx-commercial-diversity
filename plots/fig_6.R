@@ -45,6 +45,6 @@ fig = group_by(cfec, year) %>%
   ylab("Participation") +
   xlab("Year") +
   geom_point(colour = "dodgerblue4", size=2, alpha=0.5)
-pdf("Figure_6.pdf")
+pdf("Fig_6.pdf")
 fig
 dev.off()

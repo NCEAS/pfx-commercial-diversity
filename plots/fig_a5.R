@@ -52,6 +52,6 @@ fig = group_by(rbind(sub_1, sub_2, sub_3), year, case_study) %>%
   xlab("Year") +
   geom_line(aes(y = fishers/10), colour = "dodgerblue4", size=1.2) +
   scale_y_continuous(sec.axis = sec_axis(~.*(10), name = "Participation"))
-pdf("Figure_A5.pdf")
+pdf("Fig_A5.pdf")
 fig
 dev.off()

@@ -114,6 +114,6 @@ fig = ggplot(rename(totals, Fisheries=group), aes(year, n/n_year)) +
     ylab("Proportion") +
     theme_sleek() + facet_wrap(~case_study, nrow=2,ncol=2) +
   scale_fill_viridis(discrete=TRUE, end=0.9)
-pdf("Figure A6.pdf")
+pdf("Figure_A6.pdf")
 fig
 dev.off()
