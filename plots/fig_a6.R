@@ -111,7 +111,7 @@ library(viridis)
 fig = ggplot(rename(totals, Fisheries=group), aes(year, n/n_year)) +
     geom_area(aes(fill = Fisheries), position = "stack", colour = 1) +
     xlab("Year") +
-    ylab("Proportion") +
+    ylab("Proportion of people") +
     theme_sleek() + facet_wrap(~case_study, nrow=2,ncol=2) +
   scale_fill_viridis(discrete=TRUE, end=0.9)
 pdf("Figure_A6.pdf")
