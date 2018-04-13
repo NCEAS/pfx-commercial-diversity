@@ -1,9 +1,6 @@
-
 *.history
-
 analysis/.DS_Store
-
 *.pdf
-
 *.docx
 .Rproj.user
+.DS_Store
