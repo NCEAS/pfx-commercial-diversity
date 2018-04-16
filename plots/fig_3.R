@@ -7,6 +7,8 @@ devtools::install_github("seananderson/ggsidekick")
 library(ggsidekick)
 
 #  Eric's data read-in
+if (!exists("cfec")) stop("The data frame `cfec` must be loaded first.")
+
 load("/users/eric.ward/documents/CFEC/data/cfec_070616")
 
 #  Jordan's data read-in
@@ -44,7 +46,21 @@ sub_3 = filter(cfec, p_fshy %in% c("S 03T")) %>%
 sub_4 = filter(cfec, region %in% c("Kodiak")) %>%
   mutate(case_study = "Kodiak")
 
-fig = group_by(rbind(sub_1, sub_2, sub_3, sub_4), year, case_study) %>%
+totals = rbind(sub_1, sub_2, sub_3, sub_4)
+
+totals$case_study <- factor(totals$case_study, levels = c(
+  "PWS herring",
+  "Halibut",
+  "Bristol Bay Drift Gillnet",
+  "Kodiak"
+))
+totals$case_study <- forcats::fct_recode(totals$case_study,
+  `Halibut` = "Halibut",
+  `PWS herring` = "PWS herring",
+  `BBDG salmon` = "Bristol Bay Drift Gillnet",
+  `EVOS commercial (Kodiak only)` = "Kodiak")
+
+fig = group_by(totals, year, case_study) %>%
   summarize(fishers=length(unique(p_holder)),
     rev=sum(g_earn)/1000000) %>%
   ggplot(aes(year, rev)) + geom_line(colour = "dodgerblue1", size=1.2) +
