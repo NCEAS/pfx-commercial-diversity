@@ -42,7 +42,20 @@ sub_2 = filter(cfec, region %in% c("PWS")) %>%
 sub_3 = filter(cfec, region %in% c("Cook Inlet")) %>%
   mutate(case_study = "Cook Inlet")
 
-fig = group_by(rbind(sub_1, sub_2, sub_3), year, case_study) %>%
+totals = rbind(sub_1, sub_2, sub_3)
+
+totals$case_study <- factor(totals$case_study, levels = c(
+  "Prince William Sound salmon",
+  "Prince William Sound",
+  "Cook Inlet"
+))
+
+totals$case_study <- forcats::fct_recode(totals$case_study,
+  `PWS salmon` = "Prince William Sound salmon",
+  `EVOS commercial (PWS)` = "Prince William Sound",
+  `EVOS commercial (Cook Inlet)` = "Cook Inlet")
+
+fig = group_by(totals, year, case_study) %>%
   summarize(fishers=length(unique(p_holder)),
     rev=sum(g_earn)/1000000) %>%
   ggplot(aes(year, rev)) + geom_line(colour = "dodgerblue1", size=1.2) +
