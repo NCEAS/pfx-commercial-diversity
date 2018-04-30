@@ -1,39 +1,5 @@
-#  An amalgamation of general diversity plots for each fishery.
-
-library(tidyverse)
-library(reshape2)
-library(fpc)
-# devtools::install_github("seananderson/ggsidekick")
-library(ggsidekick)
-library(viridis)
-
-if (!exists("cfec")) stop("The data frame `cfec` must be loaded first.")
-
-#  Eric's data read-in
-# load("/users/eric.ward/documents/CFEC/data/cfec_070616")
-#  Jordan's data read-in
-# load("../cfec_070616.Rdata")
-
-# Deflate the data per Sean's paper
-deflationTable <- read.csv("data/deflation.csv")
-# Adjust price and g_earn for inflation
-cfec$year <- as.numeric(cfec$year)
-cfec$day <- substr(cfec$landdate, 6, 10)
-cfec <- inner_join(cfec, deflationTable)
-cfec <- mutate(cfec, g_price = g_price / defl, g_earn = g_earn / defl)
-cfec$defl <- NULL
-#===================================================================================================
-#  Get Anne's regions
-region <- read.csv("data/regions.csv")
-cfec <- cfec %>%
-  inner_join(region[, c("stat6", "final")]) %>%
-  rename(region = final)
-
-cfec$year <- as.numeric(cfec$year)
-simp.div <- function(x) {
-  1 / sum((x / sum(x))^2)
-}
-
+user <- "Sean"
+source("plots/plot-preamble.R")
 # Make Figure 3 -- revenue as main axis, permit holders as secondary
 
 sub_1 <- group_by(cfec, p_holder) %>%
