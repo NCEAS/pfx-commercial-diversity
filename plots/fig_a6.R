@@ -1,4 +1,4 @@
-user <- "Sean"
+# set user <- "your name"
 source("plots/plot-preamble.R")
 
 sub_1 = group_by(cfec, p_holder) %>%
@@ -78,6 +78,7 @@ totals <- group_by(totals, year, group, case_study) %>%
   group_by(year, case_study) %>%
   mutate(n_year = sum(n))
 
+totals$case_study <- gsub("Willam", "William", totals$case_study)
 
 totals$case_study <- factor(totals$case_study, levels = c(
   "Prince William Sound salmon",
@@ -104,10 +105,10 @@ fig <- ggplot(rename(plot_dat, Fisheries = group), aes(year, n / n_year)) +
     lwd = 0.3) +
   xlab("Year") +
   ylab("Proportion of people") +
-  theme_sleek() + facet_wrap(~case_study) +
-  scale_fill_viridis(discrete = TRUE, end = 0.9) +
+  theme_sleek() + facet_wrap(~case_study, ncol = 1) +
+  viridis::scale_fill_viridis(discrete = TRUE, end = 0.9) +
   coord_cartesian(expand = FALSE) +
   theme(legend.position = "right") +
   theme(strip.text.x = element_text(size = rel(1.1)))
 
-ggsave("Fig_A6.pdf", width = 6, height = 4)
+ggsave("Fig_A6.pdf", width = 3.7, height = 5.8)

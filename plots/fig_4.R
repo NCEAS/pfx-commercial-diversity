@@ -1,4 +1,4 @@
-user <- "Sean"
+# set user <- "your name"
 source("plots/plot-preamble.R")
 # Make Figure 3 -- revenue as main axis, permit holders as secondary
 
