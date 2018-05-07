@@ -86,9 +86,9 @@ totals$case_study <- factor(totals$case_study, levels = c(
   "Cook Inlet"
 ))
 totals$case_study <- forcats::fct_recode(totals$case_study,
-  `PWS salmon` = "Prince William Sound salmon",
-  `EVOS commercial (PWS)` = "Prince William Sound",
-  `EVOS commercial (Cook Inlet)` = "Cook Inlet")
+  `(a) PWS salmon` = "Prince William Sound salmon",
+  `(b) EVOS commercial (PWS)` = "Prince William Sound",
+  `(c) EVOS commercial (Cook Inlet)` = "Cook Inlet")
 
 all <- unique(select(totals, year, group, case_study))
 all <- expand.grid(year = unique(all$year),
@@ -106,9 +106,10 @@ fig <- ggplot(rename(plot_dat, Fisheries = group), aes(year, n / n_year)) +
   xlab("Year") +
   ylab("Proportion of people") +
   theme_sleek() + facet_wrap(~case_study, ncol = 1) +
-  viridis::scale_fill_viridis(discrete = TRUE, end = 0.9) +
+  viridis::scale_fill_viridis(discrete = TRUE, end = 0.98) +
   coord_cartesian(expand = FALSE) +
   theme(legend.position = "right") +
-  theme(strip.text.x = element_text(size = rel(1.1)))
+  theme(strip.text.x = element_text(angle = 0, hjust = 0)) +
+  theme(strip.text.x = element_text(size = rel(1)))
 
 ggsave("Fig_A6.pdf", width = 3.7, height = 5.8)

@@ -19,6 +19,7 @@ totals$case_study <- factor(totals$case_study, levels = c(
   "Bristol Bay Drift Gillnet",
   "Kodiak"
 ))
+
 totals$case_study <- forcats::fct_recode(totals$case_study,
   `Halibut` = "Halibut",
   `PWS herring` = "PWS herring",
@@ -30,23 +31,35 @@ temp <- group_by(totals, year, case_study) %>%
     rev=(sum(g_earn)/1e6)) %>%
   reshape2::melt(id.vars = c("year", "case_study"), variable.name = "rev_or_fishers")
 
+temp_rev <- mutate(temp, case_study = forcats::fct_recode(case_study,
+  `(c) Halibut` = "Halibut",
+  `(b) PWS herring` = "PWS herring",
+  `(f) BBDG salmon` = "BBDG salmon",
+  `(h) EVOS commercial (Kodiak)` = "EVOS commercial (Kodiak only)")
+)
+
+temp_part <- mutate(temp, case_study = forcats::fct_recode(case_study,
+  `(b) Halibut` = "Halibut",
+  `(a) PWS herring` = "PWS herring",
+  `(e) BBDG salmon` = "BBDG salmon",
+  `(g) EVOS commercial (Kodiak)` = "EVOS commercial (Kodiak only)")
+)
+
 make_plot <- function(dat, ylab = "") {
-  ggplot(dat, aes_string("year", "value")) +
+  g <- ggplot(dat, aes_string("year", "value")) +
     geom_line(colour = "grey40", lwd = 0.85) +
-    facet_wrap(~case_study, scale="free_y", ncol = 1) +
     theme_sleek() +
     xlab("Year") + ylim(0, NA) +
-#    theme(panel.spacing.y = unit(0.1, "lines")) +
-#    theme(
-#      strip.background = element_blank(),
-#      strip.text.x = element_blank()
-#      )  +
     guides(colour = FALSE) +
-    ylab(ylab)
+    ylab(ylab) +
+    theme(strip.text.x = element_text(angle = 0, hjust = 0)) +
+    theme(strip.text.x = element_text(size = rel(1.0)))
+  g <- g + facet_wrap(~case_study, scale="free_y", ncol = 1)
+  g
 }
-g1 <- filter(temp, rev_or_fishers == "fishers") %>%
+g1 <- filter(temp_part, rev_or_fishers == "fishers") %>%
   make_plot(ylab = "Participation (100 permit holders)")
-g2 <- filter(temp, rev_or_fishers == "rev") %>%
+g2 <- filter(temp_rev, rev_or_fishers == "rev") %>%
   make_plot(ylab = "Revenue (million USD)")
 
 pdf("Fig_3.pdf", width = 5, height = 5.7)

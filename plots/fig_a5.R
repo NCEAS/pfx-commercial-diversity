@@ -40,25 +40,34 @@ temp <- group_by(totals, year, case_study) %>%
     rev=(sum(g_earn)/1e6)) %>%
   reshape2::melt(id.vars = c("year", "case_study"), variable.name = "rev_or_fishers")
 
+temp_rev <- mutate(temp, case_study = forcats::fct_recode(case_study,
+  `(b) PWS salmon` = "PWS salmon",
+  `(d) EVOS commercial (PWS)` = "EVOS commercial (PWS)",
+  `(d) EVOS commercial (Cook Inlet)` = "EVOS commercial (Cook Inlet)")
+)
+
+temp_part <- mutate(temp, case_study = forcats::fct_recode(case_study,
+  `(a) PWS salmon` = "PWS salmon",
+  `(c) EVOS commercial (PWS)` = "EVOS commercial (PWS)",
+  `(d) EVOS commercial (Cook Inlet)` = "EVOS commercial (Cook Inlet)")
+)
+
 make_plot <- function(dat, ylab = "") {
   ggplot(dat, aes_string("year", "value")) +
     geom_line(colour = "grey40", lwd = 0.85) +
     facet_wrap(~case_study, scale="free_y", ncol = 1) +
     theme_sleek() +
     xlab("Year") + ylim(0, NA) +
-#    theme(panel.spacing.y = unit(0.1, "lines")) +
-#    theme(
-#      strip.background = element_blank(),
-#      strip.text.x = element_blank()
-#      )  +
     guides(colour = FALSE) +
-    ylab(ylab)
+    ylab(ylab) +
+    theme(strip.text.x = element_text(angle = 0, hjust = 0)) +
+    theme(strip.text.x = element_text(size = rel(1)))
 }
-g1 <- filter(temp, rev_or_fishers == "fishers") %>%
+g1 <- filter(temp_part, rev_or_fishers == "fishers") %>%
   make_plot(ylab = "Participation (100 permit holders)")
-g2 <- filter(temp, rev_or_fishers == "rev") %>%
+g2 <- filter(temp_rev, rev_or_fishers == "rev") %>%
   make_plot(ylab = "Revenue (million USD)")
 
-pdf("Fig_A5.pdf", width = 5, height = 5.0)
+pdf("Fig_A5.pdf", width = 5.5, height = 5.0)
 cowplot::plot_grid(g1, g2, align = "v")
 dev.off()

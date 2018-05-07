@@ -4,6 +4,10 @@ library(fpc)
 # devtools::install_github("seananderson/ggsidekick")
 library(ggsidekick)
 
+if (!exists("user"))
+  stop("Please define the object `user` as 'Eric', 'Sean', or 'Jordan' ",
+    "on the command line to load the correct (confidential) raw data.", call. = FALSE)
+
 if (user[[1]] == "Eric")
   load("/users/eric.ward/documents/CFEC/data/cfec_070616")
 if (user[[1]] == "Sean")
