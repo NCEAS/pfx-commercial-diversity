@@ -32,14 +32,14 @@ temp <- group_by(totals, year, case_study) %>%
   reshape2::melt(id.vars = c("year", "case_study"), variable.name = "rev_or_fishers")
 
 temp_rev <- mutate(temp, case_study = forcats::fct_recode(case_study,
-  `(c) Halibut` = "Halibut",
+  `(d) Halibut` = "Halibut",
   `(b) PWS herring` = "PWS herring",
   `(f) BBDG salmon` = "BBDG salmon",
   `(h) EVOS commercial (Kodiak)` = "EVOS commercial (Kodiak only)")
 )
 
 temp_part <- mutate(temp, case_study = forcats::fct_recode(case_study,
-  `(b) Halibut` = "Halibut",
+  `(c) Halibut` = "Halibut",
   `(a) PWS herring` = "PWS herring",
   `(e) BBDG salmon` = "BBDG salmon",
   `(g) EVOS commercial (Kodiak)` = "EVOS commercial (Kodiak only)")
