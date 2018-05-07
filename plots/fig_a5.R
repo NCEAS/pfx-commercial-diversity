@@ -43,13 +43,13 @@ temp <- group_by(totals, year, case_study) %>%
 temp_rev <- mutate(temp, case_study = forcats::fct_recode(case_study,
   `(b) PWS salmon` = "PWS salmon",
   `(d) EVOS commercial (PWS)` = "EVOS commercial (PWS)",
-  `(d) EVOS commercial (Cook Inlet)` = "EVOS commercial (Cook Inlet)")
+  `(f) EVOS commercial (Cook Inlet)` = "EVOS commercial (Cook Inlet)")
 )
 
 temp_part <- mutate(temp, case_study = forcats::fct_recode(case_study,
   `(a) PWS salmon` = "PWS salmon",
   `(c) EVOS commercial (PWS)` = "EVOS commercial (PWS)",
-  `(d) EVOS commercial (Cook Inlet)` = "EVOS commercial (Cook Inlet)")
+  `(e) EVOS commercial (Cook Inlet)` = "EVOS commercial (Cook Inlet)")
 )
 
 make_plot <- function(dat, ylab = "") {
