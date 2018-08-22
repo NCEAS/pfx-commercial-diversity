@@ -17,9 +17,9 @@ totals$case_study <- factor(totals$case_study, levels = c(
 ))
 
 totals$case_study <- forcats::fct_recode(totals$case_study,
-  `PWS salmon` = "Prince William Sound salmon",
-  `EVOS commercial (PWS)` = "Prince William Sound",
-  `EVOS commercial (Cook Inlet)` = "Cook Inlet")
+  `PWSPS salmon fishery` = "Prince William Sound salmon",
+  `PWS commercial fisheries (EVOS-area)` = "Prince William Sound",
+  `Cook Inlet commercial fisheries (EVOS-area)` = "Cook Inlet")
 
 # fig = group_by(totals, year, case_study) %>%
 #   summarize(fishers=length(unique(p_holder)),
@@ -41,15 +41,15 @@ temp <- group_by(totals, year, case_study) %>%
   reshape2::melt(id.vars = c("year", "case_study"), variable.name = "rev_or_fishers")
 
 temp_rev <- mutate(temp, case_study = forcats::fct_recode(case_study,
-  `(b) PWS salmon` = "PWS salmon",
-  `(d) EVOS commercial (PWS)` = "EVOS commercial (PWS)",
-  `(f) EVOS commercial (Cook Inlet)` = "EVOS commercial (Cook Inlet)")
+  `(a) PWSPS salmon fishery` = "PWSPS salmon fishery",
+  `(c) PWS commercial fisheries\n     (EVOS-area)` = "PWS commercial fisheries (EVOS-area)",
+  `(e) Cook Inlet commercial fisheries\n     (EVOS-area)` = "Cook Inlet commercial fisheries (EVOS-area)")
 )
 
 temp_part <- mutate(temp, case_study = forcats::fct_recode(case_study,
-  `(a) PWS salmon` = "PWS salmon",
-  `(c) EVOS commercial (PWS)` = "EVOS commercial (PWS)",
-  `(e) EVOS commercial (Cook Inlet)` = "EVOS commercial (Cook Inlet)")
+  `(b) PWSPS salmon fishery` = "PWSPS salmon fishery",
+  `(d) PWS commercial fisheries\n     (EVOS-area)` = "PWS commercial fisheries (EVOS-area)",
+  `(f) Cook Inlet commercial fisheries\n    (EVOS-area)` = "Cook Inlet commercial fisheries (EVOS-area)")
 )
 
 make_plot <- function(dat, ylab = "") {
@@ -68,6 +68,6 @@ g1 <- filter(temp_part, rev_or_fishers == "fishers") %>%
 g2 <- filter(temp_rev, rev_or_fishers == "rev") %>%
   make_plot(ylab = "Revenue (million USD)")
 
-pdf("Fig_A5.pdf", width = 5.5, height = 5.0)
-cowplot::plot_grid(g1, g2, align = "v")
+pdf("Fig_A5.pdf", width = 5.5, height = 5.4)
+cowplot::plot_grid(g2, g1, align = "v")
 dev.off()

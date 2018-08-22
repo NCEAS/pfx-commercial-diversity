@@ -86,9 +86,9 @@ totals$case_study <- factor(totals$case_study, levels = c(
   "Cook Inlet"
 ))
 totals$case_study <- forcats::fct_recode(totals$case_study,
-  `(a) PWS salmon` = "Prince William Sound salmon",
-  `(b) EVOS commercial (PWS)` = "Prince William Sound",
-  `(c) EVOS commercial (Cook Inlet)` = "Cook Inlet")
+  `(a) PWSPS salmon fishery` = "Prince William Sound salmon",
+  `(b) PWS commercial fisheries\n     (EVOS-area)` = "Prince William Sound",
+  `(c) Cook Inlet commercial fisheries\n     (EVOS-area)` = "Cook Inlet")
 
 all <- unique(select(totals, year, group, case_study))
 all <- expand.grid(year = unique(all$year),
@@ -112,4 +112,4 @@ fig <- ggplot(rename(plot_dat, Fisheries = group), aes(year, n / n_year)) +
   theme(strip.text.x = element_text(angle = 0, hjust = 0)) +
   theme(strip.text.x = element_text(size = rel(1)))
 
-ggsave("Fig_A6.pdf", width = 3.7, height = 5.8)
+ggsave("Fig_A6.pdf", width = 4, height = 6.2)

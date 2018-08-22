@@ -92,10 +92,10 @@ totals$case_study <- factor(totals$case_study, levels = c(
   "Kodiak"
 ))
 totals$case_study <- forcats::fct_recode(totals$case_study,
-    `(b) Halibut` = "Halibut",
-    `(a) PWS herring` = "PWS herring",
-    `(c) BBDG salmon` = "Bristol Bay Drift Gillnet",
-    `(d) EVOS commercial (Kodiak only)` = "Kodiak")
+    `(b) Halibut fishery` = "Halibut",
+    `(a) PWS herring fishery` = "PWS herring",
+    `(c) BBDG salmon fishery` = "Bristol Bay Drift Gillnet",
+    `(d) Kodiak commercial fisheries\n     (EVOS-area)` = "Kodiak")
 
 all <- unique(select(totals, year, group, case_study))
 all <- expand.grid(year = unique(all$year),
@@ -119,4 +119,4 @@ fig <- ggplot(rename(plot_dat, Fisheries = group), aes(year, n / n_year)) +
   theme(strip.text.x = element_text(size = rel(1.0))) +
   theme(strip.text.x = element_text(angle = 0, hjust = 0))
 
-ggsave("Fig_4.pdf", width = 6, height = 4)
+ggsave("Fig_3.pdf", width = 6, height = 4.5)
