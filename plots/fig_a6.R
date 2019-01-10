@@ -49,14 +49,25 @@ for (i in 1:ncol(aqw)) {
   aqw[which(is.na(aqw[, i])), i] <- 0
 }
 
-set.seed(28192)
 kss <- 0
+set.seed(28192)
 for (j in seq_len(15)) {
-  kss[j] <- kmeans(aqw[, -c(1:3), drop = FALSE], j)$tot.withinss
+  kss[j] <- kmeans(aqw[, -c(1:3), drop = FALSE], j, iter.max = 100)$tot.withinss
 }
 
+library(doParallel)
+registerDoParallel(cores = parallel::detectCores())
+
 set.seed(25481)
-clust <- kmeans(aqw[, -c(1:3), drop = FALSE], centers = 9, iter.max = 1e3)
+seeds <- sample.int(1e4, size = 50)
+out <- plyr::laply(seeds, function(x) {
+  set.seed(x)
+  kmeans(aqw[, -c(1:3), drop = FALSE], centers = 9, iter.max = 100)$tot.withinss
+}, .parallel = TRUE)
+
+# set the seed to one of the global minimums:
+set.seed(seeds[[which(out == min(out))[[1]]]])
+clust <- kmeans(aqw[, -c(1:3), drop = FALSE], centers = 9, iter.max = 100)
 
 # cluster based on subset to pick medoids
 # clust = fpc::pamk(aqw[sample(seq(1,nrow(aqw)),size=5000,replace=F),-c(1:3)])
