@@ -56,11 +56,13 @@ for (i in 1:ncol(aqw)) {
 }
 
 kss <- 0
+set.seed(28192)
 for (j in seq_len(15)) {
   kss[j] <- kmeans(aqw[, -c(1:3), drop = FALSE], j)$tot.withinss
 }
 
-clust <- kmeans(aqw[, -c(1:3), drop = FALSE], 10)
+set.seed(25481)
+clust <- kmeans(aqw[, -c(1:3), drop = FALSE], centers = 9, iter.max = 1e3)
 
 # cluster based on subset to pick medoids
 # clust = fpc::pamk(aqw[sample(seq(1,nrow(aqw)),size=5000,replace=F),-c(1:3)])
