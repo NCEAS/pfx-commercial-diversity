@@ -71,7 +71,7 @@ medoids <- clust$centers
 names_medoids <- ""
 for (i in seq_len(nrow(medoids))) {
   names_medoids[i] <-
-    paste0(colnames(medoids)[which(medoids[i, ] >= 0.05)], collapse = ":")
+    paste0(colnames(medoids)[which(medoids[i, ] >= 0.1)], collapse = ":")
 }
 
 # clust = kmeans(coarse_df, centers = medoids)
