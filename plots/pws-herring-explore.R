@@ -42,6 +42,9 @@ ids_stuck_arround <-
   ids_pre_1989_only_herring$p_holder[ids_pre_1989_only_herring$p_holder %in%
     ids_post_1989$p_holder]
 
+length(ids_pre_1989_only_herring$p_holder)
+length(ids_stuck_arround)
+
 coarse_df <- filter(d, p_holder %in% ids_stuck_arround) %>%
   filter(region == "PWS") # %>%
   # filter(year >= 1990)
