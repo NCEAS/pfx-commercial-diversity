@@ -1,52 +1,73 @@
+```{r load}
 # set user <- "your name"
-source("plots/plot-preamble.R")
+user <- "Sean"
+source(here::here("plots/plot-preamble.R"))
+```
 
+```{r}
 d <- group_by(cfec, p_holder) %>%
   mutate(pws = ifelse(length(which(p_fshy %in%
       c("G 01E", "G 34E", "H 01E", "H 34E", "L 21E"))) > 0, 1, 0)) %>%
   filter(pws > 0) %>%
   mutate(case_study = "PWS herring")
+```
 
-ids_pre_1989 <- d %>%
-  filter(region == "PWS") %>%
-  filter(year %in% 1985:1988) %>%
+```{r}
+ids_pre_1999 <- d %>%
+  # filter(region == "PWS") %>%
+  filter(year <= 1998) %>%
   group_by(p_holder) %>%
   summarise(n = length(unique(startdt))) %>%
   filter(n >= 1) %>%
   arrange(-n)
 
-ids_post_1989 <- d %>%
-  filter(region == "PWS") %>%
-  filter(year >= 1990) %>%
+ids_post_1999 <- d %>%
+  # filter(region == "PWS") %>%
+  filter(year >= 2000) %>%
   group_by(p_holder) %>%
   summarise(n = length(unique(startdt))) %>%
   filter(n >= 1) %>%
   arrange(-n)
+```
 
-# a. how many PWS herring fishermen totally left fishing post-PWS herring closure in 1999?
-length(ids_pre_1989$p_holder)
-length(ids_post_1989$p_holder)
-length(ids_pre_1989$p_holder[!ids_pre_1989$p_holder %in% ids_post_1989$p_holder])
+a. how many PWS herring fishermen totally left fishing post-PWS herring closure in 1999?
 
-# b. for fishermen who only fished for PWS herring prior to the closure and did not quit fishing entirely, what permits were they using after the closure?
+```{r}
+length(ids_pre_1999$p_holder)
+length(ids_post_1999$p_holder)
+length(ids_pre_1999$p_holder[!ids_pre_1999$p_holder %in% ids_post_1999$p_holder])
+```
 
-ids_pre_1989_only_herring <- d %>%
-  filter(region == "PWS") %>%
-  filter(year <= 1988) %>%
+b. for fishermen who only fished for PWS herring prior to the closure and did not quit fishing entirely, what permits were they using after the closure?
+
+```{r}
+ids_pre_1999_only_herring <- d %>%
+  # filter(region == "PWS") %>%
+  filter(year <= 1998) %>%
   group_by(p_holder) %>%
   summarise(not_herring = sum(!p_fshy %in% c("G 01E", "G 34E", "H 01E", "H 34E", "L 21E"))) %>%
   filter(not_herring == 0) %>%
   select(-not_herring)
 
 ids_stuck_arround <-
-  ids_pre_1989_only_herring$p_holder[ids_pre_1989_only_herring$p_holder %in%
-    ids_post_1989$p_holder]
+  ids_pre_1999_only_herring$p_holder[ids_pre_1999_only_herring$p_holder %in%
+    ids_post_1999$p_holder]
 
-length(ids_pre_1989_only_herring$p_holder)
+length(ids_pre_1999_only_herring$p_holder)
 length(ids_stuck_arround)
+```
 
-coarse_df <- filter(d, p_holder %in% ids_stuck_arround) %>%
-  filter(region == "PWS") # %>%
+```{r}
+filter(d, p_holder %in% ids_pre_1999_only_herring$p_holder) %>%
+  group_by(year) %>%
+  summarize(n = length(unique(p_holder))) %>%
+  arrange(year) %>%
+  knitr::kable()
+```
+
+```{r}
+coarse_df <- filter(d, p_holder %in% ids_stuck_arround) #%>%
+  # filter(region == "PWS") # %>%
   # filter(year >= 1990)
 
 coarse_df <- coarse_df %>%
@@ -71,11 +92,14 @@ summary <- group_by(coarse_df, p_holder, year, p_fshy, case_study) %>%
   group_by(p_holder, year, case_study) %>%
   mutate(g = g / totRev) %>%
   select(-totRev)
+```
 
-# summary2 <- group_by(summary, year, p_holder) %>%
+kmeans:
 
-
-# wide <- reshape2::dcast(summary, year + p_holder ~ p_fshy)
+```{r}
+wide <- reshape2::dcast(summary, year + p_holder + case_study ~ p_fshy)
+wide$p_holder <- as.numeric(as.factor(wide$p_holder))
+knitr::kable(wide)
 
 # use reshape 2 to cast this to wide format
 aql <- melt(summary, id.vars = c(
@@ -89,10 +113,10 @@ for (i in 1:ncol(aqw)) {
 }
 
 kss <- 0
-# set.seed(28192)
-# for (j in seq_len(15)) {
-#   kss[j] <- kmeans(aqw[, -c(1:3), drop = FALSE], j, iter.max = 100)$tot.withinss
-# }
+set.seed(28192)
+for (j in seq_len(5)) {
+  kss[j] <- kmeans(aqw[, -c(1:3), drop = FALSE], j, iter.max = 100)$tot.withinss
+}
 
 library(doParallel)
 registerDoParallel(cores = parallel::detectCores())
@@ -101,12 +125,12 @@ set.seed(25481)
 seeds <- sample.int(1e4, size = 50)
 out <- plyr::laply(seeds, function(x) {
   set.seed(x)
-  kmeans(aqw[, -c(1:3), drop = FALSE], centers = 9, iter.max = 100)$tot.withinss
+  kmeans(aqw[, -c(1:3), drop = FALSE], centers = 5, iter.max = 100)$tot.withinss
 }, .parallel = TRUE)
 
 # set the seed to one of the global minimums:
 set.seed(seeds[[which(out == min(out))[[1]]]])
-clust <- kmeans(aqw[, -c(1:3), drop = FALSE], centers = 9, iter.max = 100)
+clust <- kmeans(aqw[, -c(1:3), drop = FALSE], centers = 5, iter.max = 100)
 
 # cluster based on subset to pick medoids
 # clust = fpc::pamk(aqw[sample(seq(1,nrow(aqw)),size=5000,replace=F),-c(1:3)])
@@ -141,7 +165,7 @@ plot_dat <- bind_rows(missing, totals)
 plot_dat <- arrange(plot_dat, year, group, case_study)
 
 fig <- ggplot(rename(plot_dat, Fisheries = group), aes(year, n / n_year)) +
-  geom_area(aes(fill = Fisheries), position = "stack", colour = "grey90",
+  geom_col(aes(fill = Fisheries), position = "stack", colour = "grey90",
     lwd = 0.3) +
   xlab("Year") +
   ylab("Proportion of permit holders") +
@@ -151,8 +175,9 @@ fig <- ggplot(rename(plot_dat, Fisheries = group), aes(year, n / n_year)) +
   theme(legend.position = "right") +
   theme(strip.text.x = element_text(size = rel(1.0))) +
   theme(strip.text.x = element_text(angle = 0, hjust = 0)) +
-  geom_vline(xintercept = 1989, lty = 2)
+  geom_vline(xintercept = 1999, lty = 2)
 
 fig
 
-ggsave("Fig_pws_herring.pdf", width = 4.8, height = 3)
+ggsave(here::here("Fig_pws_herring2.pdf"), width = 4.8, height = 3)
+```
